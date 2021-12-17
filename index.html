@@ -12,8 +12,13 @@
 
     <!--custom css-->
     <link rel="stylesheet" href="css/style.css">
+    
+    <script src="https://public.tableau.com/javascripts/api/tableau-2.0.0.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 </head>
-<body>
+<body onload=getValue();>
+<br>
+<center>
 
 <div class='stars'>
 <div class='twinkling'>
@@ -21,12 +26,65 @@
 
 <div class='content'>
 <header>
-    <h1>International Space Station</h1>
+    <h1>International Space Station Location</h1>
 
     <div class="alert alert-primary" role="alert">
-        International space station project made by AbrahamDevTM!
+        International space station location project made by AbrahamDevTM!
     </div>
+    <p>It's updated every 8 seconds</p>
+    <p>You can also view your loaction below it</p>
 </header>    
+<head>
+
+
+
+<div id="center1"><center><div id="tableauViz1"></div></center></div>
+</center>
+
+<script>
+function getValue() {
+			var res;
+            $.ajax({
+                type: 'GET',
+                dataType: 'jsonp',
+                url: 'http://api.open-notify.org/iss-now.json',
+                async: false,
+                crossDomain: true,
+                complete: function (data) {
+                    if (data.readyState === 4 && data.status === 200) {
+						Lat = data.responseJSON.iss_position.latitude;
+						Long = data.responseJSON.iss_position.longitude;
+						LatLong(Lat,Long);
+                    }
+				}
+			});
+        }
+</script> 
+ 
+<script>
+var workbooka;
+var placeholderDiv = document.getElementById("tableauViz1");
+var Url = "https://public.tableau.com/views/ISStracker/ISSLocation?:showVizHome=no";
+var options = {
+	hideTabs: true,
+	hideToolbar: true,
+	width: "100%",
+	height: "200%",
+	onFirstInteractive: function() {
+		getValue();
+		workbooka = viz.getWorkbook();
+	}
+};
+
+var viz = new tableauSoftware.Viz(placeholderDiv, Url, options);
+window.setInterval("getValue()","8000");
+
+function LatLong(a,b) {
+workbooka.changeParameterValueAsync("Lat", [a]);
+workbooka.changeParameterValueAsync("Long", [b]);
+}
+
+</script>
 
 
 
